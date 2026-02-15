@@ -1,0 +1,399 @@
+{
+  "name": "AI News-to-App",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -352,
+        0
+      ],
+      "id": "c6ff2d9f-3c9f-442c-a595-e45c2d78545c",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Act as a professional tech journalist. Your goal is to transform the provided search results into a high-quality news summary.\n\n### DATA TO PROCESS:{{ JSON.stringify($json.results, null, 2) }}\n\n\n### YOUR INSTRUCTIONS:\n1. Review the articles provided in the DATA section.\n2. Select the single most impactful story (e.g., the AI Singularity/Matt Shumer article or the Trump Tech Force).\n3. Output ONLY a valid JSON object with these three keys:\n   - \"title\": A catchy, professional headline.\n   - \"content\": A 2-paragraph summary explaining why this news matters.\n   - \"image_prompt\": A 10-word vivid description for an AI image generator (no artist names).\n\n### OUTPUT RULES:\n- Do not include any conversational text (like \"Here is your JSON\").\n- Do not use markdown code blocks (```json).\n- If the DATA section is empty, reply with: {\"error\": \"No data found\"}.",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "d5dff799-261b-4d00-a9e3-1b015bdfb4b9",
+      "name": "Basic LLM Chain",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        160
+      ],
+      "id": "9ddd296e-2cf9-4985-842e-ed2912aca5d6",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "fEYJ4RamxXlvx1Mt",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Get the raw text\nlet rawText = $input.first().json.text;\n\n// 2. The \"Nuclear Option\": Extract content using Regex instead of JSON.parse\n// This looks for \"key\": \"value\" patterns even if the JSON is broken\nconst extract = (key) => {\n  const regex = new RegExp(`\"${key}\"\\\\s*:\\\\s*\"([\\\\s\\\\S]*?)\"(?=\\\\s*,|\\\\s*})`);\n  const match = rawText.match(regex);\n  return match ? match[1].replace(/\\\\n/g, '\\n').trim() : null;\n};\n\nconst title = extract(\"title\");\nconst content = extract(\"content\");\nconst image_prompt = extract(\"image_prompt\");\n\n// 3. Return clean, separate fields\nreturn {\n  title: title || \"Headline Missing\",\n  content: content || \"Content failed to parse.\",\n  image_prompt: image_prompt || \"AI Cityscape\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "9e836774-3a5a-4094-800b-f5f94d4e5a0a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1bRrpznuBJrUn7MYA3bEtkdopy_Pd27oWOqkVHwRSqVo",
+          "mode": "list",
+          "cachedResultName": "AI_Command_Center",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRrpznuBJrUn7MYA3bEtkdopy_Pd27oWOqkVHwRSqVo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bRrpznuBJrUn7MYA3bEtkdopy_Pd27oWOqkVHwRSqVo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Headline": "={{ $('Code in JavaScript').item.json.title }}",
+            "Date": "={{ $now }}",
+            "Summary": "={{ $('Code in JavaScript').item.json.content }}",
+            "Image_URL": "={{ $json.data.display_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image_URL",
+              "displayName": "Image_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Source_Link",
+              "displayName": "Source_Link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        768,
+        0
+      ],
+      "id": "095ee465-f853-4127-9eec-6816b943902b",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3agu8f4HpobLwW0z",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "748b239b450fa1d0e711c09a4c2a87c2"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        576,
+        -96
+      ],
+      "id": "6deac137-86a7-42b8-b0c9-6b066f3d4ab7",
+      "name": "ImgBB"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "huggingFaceApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "image/png"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "inputs",
+              "value": "={{ $json.image_prompt }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        400,
+        0
+      ],
+      "id": "203b53c9-db09-4aea-9cfe-97575785d72c",
+      "name": "HuggingFace - Img",
+      "credentials": {
+        "huggingFaceApi": {
+          "id": "IQKpVk7iTwKyGBnp",
+          "name": "HuggingFaceApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"api_key\": \"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\",\n  \"query\": \"latest AI news today\",\n  \"search_depth\": \"basic\",\n  \"topic\": \"news\",\n  \"max_results\": 3\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -208,
+        0
+      ],
+      "id": "22c3cad5-ed0c-438a-8c29-9731bbdab491",
+      "name": "Tavily"
+    },
+    {
+      "parameters": {
+        "sendTo": "thakre.ananya101@gmail.com, officialshri21@gmail.com",
+        "subject": "=🗞️ AI Daily News: {{ $json.Headline }}",
+        "message": "=<div style=\"font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; background-color: #ffffff;\">\n  \n  <div style=\"background-color: #1a1a1a; padding: 20px; text-align: center;\">\n    <h2 style=\"color: #ffffff; margin: 0; letter-spacing: 2px;\">AI MORNING REPORT</h2>\n  </div>\n\n  <div style=\"padding: 25px;\">\n    <h1 style=\"font-size: 24px; color: #1a1a1a; line-height: 1.3; margin-top: 0;\">{{ $json.Headline }}</h1>\n    <p style=\"color: #888888; font-size: 13px;\">{{ $now.format('cccc, MMMM do, yyyy') }}</p>\n\n    <div style=\"margin: 20px 0;\">\n      <img src=\"{{ $('ImgBB').item.json.data.display_url }}\" alt=\"AI Generated News Image\" style=\"width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);\">\n    </div>\n\n    <h3 style=\"color: #333333; margin-bottom: 10px;\">Executive Summary</h3>\n    <p style=\"color: #4f4f4f; line-height: 1.6; font-size: 16px;\">{{ $json.Summary }}</p>\n\n  <div style=\"background-color: #f9f9f9; padding: 15px; text-align: center; border-top: 1px solid #eeeeee;\">\n    <p style=\"color: #999999; font-size: 11px; margin: 0;\">Automated by your n8n AI Agent</p>\n  </div>\n</div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        976,
+        0
+      ],
+      "id": "26745538-4166-463f-a9fe-b848991b267f",
+      "name": "Send a message",
+      "webhookId": "51c9a2c3-8f8b-46a3-90e3-8e6405bcaaf7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "0DjOKfRnfzcwdyKo",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Tavily",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HuggingFace - Img",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HuggingFace - Img": {
+      "main": [
+        [
+          {
+            "node": "ImgBB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ImgBB": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "efbb047b-aa20-404c-bad7-af9782b277d8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "48c9b1791f8d493e8a71049e6ba05f7889fa1c2d61047518307757e06aeafff0"
+  },
+  "id": "7rlojF2Ki48B3Gs0",
+  "tags": []
+}
