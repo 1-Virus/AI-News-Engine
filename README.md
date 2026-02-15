@@ -1,15 +1,15 @@
 # 🗞️ Autonomous AI News Agent
 
-> An intelligent, end-to-end automation pipeline that transforms the daily news cycle into a high-quality, illustrated digital briefing—fully automated with **n8n**.
+An intelligent, end-to-end automation pipeline that transforms the daily news cycle into a high-quality, illustrated digital briefing—fully automated with **n8n**.
 
 ---
 
-## 🚀 Overview
+### 🚀 Overview
 This agent doesn't just find news; it **curates** it. It autonomously researches trending tech topics, synthesizes the information into executive summaries, generates custom context-aware AI artwork, and delivers the final report via a professional email newsletter.
 
 <br>
 
-## 🛠️ Tech Stack & Roles
+### 🛠️ Tech Stack & Roles
 * **n8n** 🧠 — The central "Brain" orchestrating the entire multi-step workflow.
 * **Tavily AI** 🔍 — Advanced web-scraping and real-time news retrieval.
 * **Groq (Llama 3)** ✍️ — High-speed LLM for concise, analytical news summarization.
@@ -20,19 +20,25 @@ This agent doesn't just find news; it **curates** it. It autonomously researches
 
 ---
 
-## ⚙️ How it Works
-1.  **Trigger:** A scheduled cron job starts the agent every morning at 8:00 AM. ⏰
-2.  **Research:** **Tavily** scans the web for breaking tech and AI news. 🌐
-3.  **Summarize:** **Groq** processes the findings into a clear, "TL;DR" summary. 📝
-4.  **Visualize:** **Hugging Face** uses the headline to paint a unique cover image. 🎭
-5.  **Store:** The data (Headline, Summary, Image URL) is saved to **Google Sheets**. 📥
-6.  **Deliver:** A custom-styled HTML newsletter is sent to **Gmail** inboxes. 📬
+### ⚙️ How it Works
+1. **Trigger** ⏰  
+   A scheduled cron job starts the agent every morning at 8:00 AM.
+2. **Research** 🌐  
+   **Tavily** scans the web for breaking tech and AI news.
+3. **Summarize** 📝  
+   **Groq** processes the findings into a clear, "TL;DR" summary.
+4. **Visualize** 🎭  
+   **Hugging Face** uses the headline to paint a unique cover image for the story.
+5. **Store** 📥  
+   The data (Headline, Summary, Image URL) is saved to **Google Sheets**.
+6. **Deliver** 📬  
+   A custom-styled HTML newsletter is sent to subscribers' **Gmail** inboxes.
 
 <br>
 
-## 📈 Key Features
+### 📈 Key Features
 * ✅ **100% Autonomous:** Zero manual intervention required from search to delivery.
 * ✅ **Dynamic Visuals:** No generic stock photos; every image is unique and AI-generated.
-* ✅ **Scalable Archive:** Every story is logged for future data analysis or retrieval.
+* ✅ **Professional Delivery:** Automated HTML email formatting for high readability.
 
 ---
