@@ -8,6 +8,7 @@ An intelligent, end-to-end automation pipeline that transforms the daily news cy
 This agent doesn't just find news; it **curates** it. It autonomously researches trending tech topics, synthesizes the information into executive summaries, generates custom context-aware AI artwork, and delivers the final report via a professional email newsletter.
 
 <br>
+---
 
 ### 🛠️ Tech Stack & Roles
 * **n8n** 🧠 — The central "Brain" orchestrating the entire multi-step workflow.
@@ -35,6 +36,7 @@ This agent doesn't just find news; it **curates** it. It autonomously researches
    A custom-styled HTML newsletter is sent to subscribers' **Gmail** inboxes.
 
 <br>
+---
 
 ### 📈 Key Features
 * ✅ **100% Autonomous:** Zero manual intervention required from search to delivery.
